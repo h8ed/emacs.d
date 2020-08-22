@@ -37,8 +37,6 @@
   (cl-delete-duplicates file-name-handler-alist :test 'equal))
 (add-hook 'after-init-hook #'ambrevar/reset-file-name-handler-alist)
 
-(member ranger-mode minor-mode-alist)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; -- the basics -- ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -112,6 +110,7 @@
  display-line-numbers-current-absolute t
  display-line-numbers-width 4
  display-line-numbers-widen t
+ column-number-mode t
 
  cursor-in-non-selected-windows nil
  cursor-type 'bar
@@ -157,21 +156,24 @@
 (fringe-mode 10)
 
 ;;; Feeling some EXWM?
-(require 'exwm-systemtray)
-(exwm-systemtray-enable)
-(require 'my-exwm)
-(defun wm-xmodmap ()
-  (call-process
-   "xmodmap" nil
-   (get-buffer-create "wm") nil (expand-file-name "~/.qwerty")))
-(wm-xmodmap)
-(require 'scrot)
+;; (require 'exwm-systemtray)
+;; (exwm-systemtray-enable)
+;; (require 'my-exwm)
+;; (defun wm-xmodmap ()
+;; (call-process
+;; "xmodmap" nil
+;; (get-buffer-create "wm") nil (expand-file-name "~/.qwerty")))
+;; (wm-xmodmap)
+;; (require 'scrot)
 
 ;;; Oh Mode - personal modal editing
 (require 'oh-mode)
 ;; (require 'demigod)
 
-;;; --- "advanced" changes --- ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; "advanced" changes ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; change emacsclient `C-x k' functionality 
 (add-hook 'server-switch-hook
           (lambda ()
@@ -216,3 +218,9 @@ name as (name-without-ns . local)."
             (list set
                   (intern (format "%s-%s" var ns)) (cadr x))))
         (seq-partition args 2))))
+
+(require 'tramp)
+(ido-mode 1)
+(setq-ns ido
+  enable-flex-matching t
+  everywhere t)

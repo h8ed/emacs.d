@@ -99,7 +99,11 @@
   (emms-default-players))
 
 (use-package simple-modeline
-  :hook (after-init . simple-modeline-mode))
+  :hook (after-init . simple-modeline-mode)
+  :config
+  (setq
+   simple-modeline-show-input-method nil
+   simple-modeline-show-minor-modes nil))
 
 (use-package writeroom-mode)
 
