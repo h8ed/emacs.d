@@ -11,10 +11,10 @@
 ;; The main goal of this configuration is to
 ;; utilize both the benefits of placement-based
 ;; bindings like XFK, while keeping the vim
-;; movement keys, and mnemonic leader keybinds.
-;; Everything is meant to be configured to *my*
-;; liking, so there may be some things others
-;; would like to tweak to their own preference.
+;; movement keys (hjkl), and mnemonic leader
+;; keybinds. Everything is meant to be configured
+;; to *my* liking, so there may be some things
+;; others would like to tweak to their own preference.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; -- startup ops -- ;;;
@@ -28,12 +28,12 @@
 (add-hook 'after-init-hook #'ambrevar/reset-gc-cons-threshold)
 
 ;;; Temporarily disable the file name handler.
-(setq default-file-name-handler-alist file-name-handler-alist)
-(setq file-name-handler-alist nil)
+(setq default-file-name-handler-alist file-name-handler-alist
+      file-name-handler-alist nil)
 (defun ambrevar/reset-file-name-handler-alist ()
   (setq file-name-handler-alist
-    (append default-file-name-handler-alist
-        file-name-handler-alist))
+        (append default-file-name-handler-alist
+                file-name-handler-alist))
   (cl-delete-duplicates file-name-handler-alist :test 'equal))
 (add-hook 'after-init-hook #'ambrevar/reset-file-name-handler-alist)
 
@@ -75,21 +75,16 @@
 
 (add-to-list
  'load-path "~/.emacs.d/plugins/yasnippet")
-
 (require 'yasnippet)
-
 (setq yas-snippet-dirs
       '("~/.emacs.d/snippets"))
-
 (yas-global-mode 1)
 
 ;; require packages from load path
-(require 'o-modeline) ; time inside modeline
-(require 'misc-packages) ; misc packages for stuff i do with emacs .. duh
-(require 'o-erc) ; IRC setup
+(require 'pack) ; misc packages for stuff i do with emacs .. duh
 (require 'pdf-images) ; support for PDF and image viewing inside emacs
-(require 'bind-fun) ; personal functions for binding in Oh-Mode
-(require 'o-hydras) ; pseudo modal modes
+(require 'functions) ; personal functions for binding in Oh-Mode
+(require 'hydras) ; pseudo modal modes
 
 ;; basic changes
 (menu-bar-mode -1)
@@ -97,19 +92,33 @@
 (tool-bar-mode -1)
 (fringe-mode 0)
 (xclip-mode 1)
-(global-display-line-numbers-mode 1)
+(global-display-line-numbers-mode -1)
 (electric-pair-mode)
 (electric-indent-mode -1)
 (add-hook
  'after-change-major-mode-hook (lambda() (electric-indent-mode -1)))
 (global-hl-line-mode 1)
+(emms-all)
+(emms-default-players)
+
+(defun simple-mode-line-render (left right)
+  (let* ((available-width (- (window-width) (length left) 2)))
+    (format (format " %%s %%%ds " available-width) left right)))
 
 ;; set variables
 (setq-default
+ mode-line-format
+ '((:eval (simple-mode-line-render
+           ;; left
+           (format-mode-line "｢%*｣")
+           ;; right
+           (format-mode-line "｢%b ⟶ (%l,%c)｣ "))))
+
  display-line-numbers-type 'relative
- display-line-numbers-current-absolute t
- display-line-numbers-width 4
- display-line-numbers-widen t
+ ;; display-line-numbers-current-absolute t
+ ;; display-line-numbers-width 4
+ ;; display-line-numbers-widen t
+
  column-number-mode t
 
  cursor-in-non-selected-windows nil
@@ -119,6 +128,8 @@
 
  mouse-wheel-scroll-amount '(1)
  mouse-wheel-progressive-speed 'nil
+
+ emms-source-file-default-directory "~/Music/"
 
  search-whitespace-regexp ".*"
  isearch-lax-whitespace t
@@ -149,11 +160,7 @@
 
 ;; UI changes
 (load-theme 'xresources t)
-(set-face-attribute
- 'default nil :foreground "#000000" :font "IBM Plex Mono" :height 100)
-(set-face-attribute
- 'mode-line-inactive nil :background "#afafaf")
-(fringe-mode 10)
+(fringe-mode 0)
 
 ;;; Feeling some EXWM?
 ;; (require 'exwm-systemtray)
@@ -168,7 +175,6 @@
 
 ;;; Oh Mode - personal modal editing
 (require 'oh-mode)
-;; (require 'demigod)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; "advanced" changes ;;;
@@ -218,9 +224,3 @@ name as (name-without-ns . local)."
             (list set
                   (intern (format "%s-%s" var ns)) (cadr x))))
         (seq-partition args 2))))
-
-(require 'tramp)
-(ido-mode 1)
-(setq-ns ido
-  enable-flex-matching t
-  everywhere t)

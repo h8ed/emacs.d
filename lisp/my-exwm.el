@@ -95,6 +95,25 @@
                print))
     (cl-pushnew k exwm-input-prefix-keys))
 
+  (setq exwm-manage-configurations
+        '(((equal exwm-class-name "Alacritty")
+           floating t
+           floating-mode-line nil
+           width 0.6
+           height 0.8)
+          ((equal exwm-class-name "runelite")
+           floating t
+           floating-mode-line nil)
+          ((equal exwm-class-name "net-runelite-launcher-Launcher")
+           floating t
+           floating-mode-line nil)))
+
+  (exwm-input-set-key (kbd "<s-return>")
+                      (lambda ()
+                        (interactive)
+                        (start-process-shell-command "alacritty" nil "alacritty")))
+  
+  (setq exwm-floating-border-width 2)
   ;; this just enables exwm, it started automatically once everything is ready
   (exwm-enable))
 

@@ -1,4 +1,6 @@
 ;; icons
+(use-package quelpa-use-package)
+
 (use-package all-the-icons)
 
 ;; dashboard
@@ -30,16 +32,29 @@
        ""
        (lambda (&rest _) (browse-url "https://discord.com")))))))
 
+(use-package dash)
+(use-package dash-functional)
+
 (use-package show-paren
   :defer t
   :hook (prog-mode . show-paren-mode)
   :config
   (setq-ns show-paren
     delay 0
+    when-point-in-periphery t
     when-point-inside-paren t))
 
+;; (use-package simple-modeline
+;; :config
+;; (simple-modeline-mode)
+;; (setq
+;; simple-modeline-show-misc-info t
+;; simple-modeline-show-input-method nil
+;; simple-modeline-show-eol nil
+;; simple-modeline-show-process nil
+;; simple-modeline-show-vc nil))
+
 (use-package aggressive-indent
-  :ensure t
   :hook ((prog-mode . aggressive-indent-mode)
          (emacs-lisp-mode . aggressive-indent-mode)))
 
@@ -59,14 +74,8 @@
   :config
   (add-hook 'prog-mode-hook 'company-mode))
 
-(use-package ivy)
-(ivy-mode 1)
-
-;; (use-package helm
-;; :ensure t
-;; :bind (("M-x" . helm-M-x))
-;; :config
-;; (helm-mode 1))
+(use-package ivy
+  :config (ivy-mode 1))
 
 (use-package nix-mode
   :mode "\\.nix\\'")
@@ -80,7 +89,6 @@
 (use-package treemacs :bind ("C-c n" . treemacs))
 
 (use-package lua-mode
-  :ensure t
   :hook (lua-mode . indent-tabs-mode)
   :config
   (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
@@ -98,19 +106,14 @@
   (emms-all)
   (emms-default-players))
 
-(use-package simple-modeline
-  :hook (after-init . simple-modeline-mode)
-  :config
-  (setq
-   simple-modeline-show-input-method nil
-   simple-modeline-show-minor-modes nil))
-
 (use-package writeroom-mode)
 
-(use-package elcord)
+(use-package org-starless
+  :quelpa (org-starless :repo "TonCherAmi/org-starless" :fetcher github))
 
 (use-package org
   :hook ((org-mode . org-bullets-mode)
+         (org-mode . org-starless-mode)
          (org-mode . variable-pitch-mode)
          (org-mode . visual-line-mode))
   :config
@@ -162,7 +165,7 @@
    '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
    '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))))
 
-(use-package htmlize :ensure t)
+(use-package htmlize)
 
 (use-package emacs
   :delight
@@ -183,4 +186,4 @@
 ;; (use-package vterm
 ;; :load-path "/home/orion/.emacs.d/lisp/emacs-libvterm/")
 
-(provide 'misc-packages)
+(provide 'pack)

@@ -1,11 +1,7 @@
-(use-package xah-fly-keys)
-(use-package kakoune)
-(use-package expand-region)
-(use-package hydra) 
-(use-package drag-stuff)
-(use-package request)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; My personal functions ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; -- my personal functions -- ;;
 (defun o/ryo-stick ()
   (interactive)
   (if (ryo-modal-mode)
@@ -31,6 +27,44 @@
   (interactive)
   (forward-char)
   (ryo-modal-mode -1))
+
+(defun o/select-to-eol ()
+  (interactive)
+  (kakoune-set-mark-if-inactive)
+  (move-end-of-line 1))
+
+(defun o/select-to-bol ()
+  (interactive)
+  (kakoune-set-mark-if-inactive)
+  (move-beginning-of-line 1))
+
+(defun o/wrap-fun-paren ()
+  (interactive)
+  (ryo-modal-mode -1)
+  (er/mark-defun)
+  (execute-kbd-macro (kbd "(")))
+
+(defun o/wrap-fun-sqr-bracket ()
+  (interactive)
+  (ryo-modal-mode -1)
+  (progn (er/mark-defun)
+         (execute-kbd-macro (kbd "["))
+         (end-of-defun)
+         (beginning-of-defun)
+         (xah-backward-left-bracket)
+         (move-end-of-line 1)
+         (execute-kbd-macro (kbd "]"))))
+
+(defun o/wrap-fun-curly-bracket ()
+  (interactive)
+  (ryo-modal-mode -1)
+  (progn (er/mark-defun)
+         (execute-kbd-macro (kbd "{"))
+         (end-of-defun)
+         (beginning-of-defun)
+         (xah-backward-left-bracket)
+         (move-end-of-line 1)
+         (execute-kbd-macro (kbd "}"))))
 
 (defun gk-pop-shell (arg)
   "Pop a shell in a side window.
@@ -137,4 +171,4 @@ Version 2019-03-07"
 	   (org-bullets-mode))
 	'(nil)))
 
-(provide 'bind-fun)
+(provide 'functions)

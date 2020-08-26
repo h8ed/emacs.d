@@ -22,4 +22,4 @@
 ;; ("b" ido-switch-buffer "buf")
 ;; ("q" nil "cancel"))
 
-(provide 'o-hydras)
+(provide 'hydras)
