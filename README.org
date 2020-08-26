@@ -1,0 +1,7 @@
+#+TITLE: Emacs Config.
+#+AUTHOR: Orion (nory, bash)
+
+** Y no literate emax c0nfig?...
+Don't get me wrong -- I think literate programming is an amazing thing. However, I do not like to use it for personal projects. I believe that literate programming is best used when working with a group of people, especially when that work is indirect, and people have varying levels of understanding of the code base.
+This however does not fit into this sort of situation. My configuration is already a mess, and contrary to what your intuition may say, throwing it all into an Org file and wrapping some markdown text around it will not make it any cleaner. Literate programming does not inherently give you clean code; to have a good literate file, the code must already be organized in a way that makes sense.
+Personally, for my Emacs configuration, I'd rather just write normally, without the overhead of Org-babel (I have had some headache inducing issues with it before). That being said, I apologize for the horrendous Elisp you may be about to lay your eyes on. Anything that resembles a lick of sanity in this configuration likely did not come from me, or was at least greatly inspired by someone elses work.
