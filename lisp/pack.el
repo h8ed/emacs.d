@@ -35,6 +35,38 @@
 (use-package dash)
 (use-package dash-functional)
 
+(use-package mu4e
+  :demand t
+  :config
+  ;; use mu4e for e-mail in emacs
+  (setq mail-user-agent 'mu4e-user-agent)
+
+  ;; these must start with a "/", and must exist
+  ;; (i.e.. /home/user/Maildir/sent must exist)
+  ;; you use e.g. 'mu mkdir' to make the Maildirs if they don't
+  ;; already exist
+
+  ;; below are the defaults; if they do not exist yet, mu4e offers to
+  ;; create them. they can also functions; see their docstrings.
+  ;; (setq mu4e-sent-folder   "/sent")
+  ;; (setq mu4e-drafts-folder "/drafts")
+  ;; (setq mu4e-trash-folder  "/trash")
+
+  ;; smtp mail setting; these are the same that `gnus' uses.
+  (setq
+   message-send-mail-function   'smtpmail-send-it
+   smtpmail-default-smtp-server "smtp.example.com"
+   smtpmail-smtp-server         "smtp.example.com"
+   smtpmail-local-domain        "example.com")
+  (setq mu4e-contexts
+        `( ,(make-mu4e-context
+             :name "Gmail"
+             :match-func (lambda (msg)
+                           (when msg
+                             (string-prefix-p "/Gmail" (mu4e-message-field msg :maildir))))
+             :vars '((mu4e-trash-folder . "/Gmail/[Gmail].Trash")
+                     (mu4e-refile-folder . "/Gmail/[Gmail].Archive"))))))
+
 (use-package show-paren
   :defer t
   :hook (prog-mode . show-paren-mode)
@@ -76,6 +108,8 @@
 
 (use-package ivy
   :config (ivy-mode 1))
+
+(use-package ctrlf)
 
 (use-package nix-mode
   :mode "\\.nix\\'")

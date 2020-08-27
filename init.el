@@ -20,14 +20,14 @@
 ;;; -- startup ops -- ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; Temporarily reduce garbage collection during startup. Inspect `gcs-done'.
+;; Temporarily reduce garbage collection during startup. Inspect `gcs-done'.
 (defun ambrevar/reset-gc-cons-threshold ()
   (setq gc-cons-threshold
         (car(get 'gc-cons-threshold 'standard-value))))
 (setq gc-cons-threshold (* 64 1024 1024))
 (add-hook 'after-init-hook #'ambrevar/reset-gc-cons-threshold)
 
-;;; Temporarily disable the file name handler.
+;; Temporarily disable the file name handler.
 (setq default-file-name-handler-alist file-name-handler-alist
       file-name-handler-alist nil)
 (defun ambrevar/reset-file-name-handler-alist ()
@@ -83,8 +83,8 @@
 ;; require packages from load path
 (require 'pack) ; misc packages for stuff i do with emacs .. duh
 (require 'pdf-images) ; support for PDF and image viewing inside emacs
-(require 'functions) ; personal functions for binding in Oh-Mode
-(require 'hydras) ; pseudo modal modes
+(require 'functions) ; personal functions
+(require 'hydras) ; pseudo modal modes -- do i still need this?
 
 ;; basic changes
 (menu-bar-mode -1)
@@ -110,9 +110,10 @@
  mode-line-format
  '((:eval (simple-mode-line-render
            ;; left
-           (format-mode-line "｢%*｣")
+           ;; (format-mode-line "｢%*｣")
+           (format-mode-line " ")
            ;; right
-           (format-mode-line "｢%b ⟶ (%l,%c)｣ "))))
+           (format-mode-line "%b ⟶ (%l,%c) "))))
 
  display-line-numbers-type 'relative
  ;; display-line-numbers-current-absolute t
@@ -160,9 +161,9 @@
 
 ;; UI changes
 (load-theme 'xresources t)
-(fringe-mode 0)
+(fringe-mode '(0 . 0))
 
-;;; Feeling some EXWM?
+;; Feeling some EXWM?
 ;; (require 'exwm-systemtray)
 ;; (exwm-systemtray-enable)
 ;; (require 'my-exwm)
@@ -173,8 +174,8 @@
 ;; (wm-xmodmap)
 ;; (require 'scrot)
 
-;;; Oh Mode - personal modal editing
-(require 'oh-mode)
+;; Oh Mode - personal modal editing
+(require 'modal)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; "advanced" changes ;;;

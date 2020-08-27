@@ -4,8 +4,8 @@
 (require 'functions)
 
 (general-emacs-define-key global-map
-  "C-;" 'isearch-backward
-  "C-'" 'isearch-forward
+  "C-;" 'ctrlf-backward-literal
+  "C-'" 'ctrlf-forward-literal
   "<M-up>" 'drag-stuff-up
   "<M-down>" 'drag-stuff-down)
 

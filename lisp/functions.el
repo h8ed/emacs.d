@@ -94,40 +94,6 @@ Pass arg to ‘shell’."
 (global-set-key (kbd "<XF86AudioLowerVolume>") 'o/voldown)
 (global-set-key (kbd "<XF86AudioRaiseVolume>") 'o/volup)
 
-;; Print screen
-;; (global-set-key
-;;  (kbd "<print>")
-;;  (lambda ()
-;;    (interactive)
-;;    (let ((path (concat "~/Documents/Screenshot-" (format-time-string "%Y-%m-%d,%H:%M:%S") ".png")))
-;; 	 (start-process-shell-command
-;; 	  "scrot" nil (concat "scrot -s -f " path))
-;; 	 (message (concat "Screenshot saved to " path)))))
-
-;; (defun x11-yank-image-at-point-as-image ()
-;; "Yank the image at point to the X11 clipboard as image/png."
-;; (interactive)
-;; (let ((image (get-text-property (point) 'display)))
-;; (if (eq (car image) 'image)
-;; (let ((data (plist-get (cdr image) ':data))
-;; (file (plist-get (cdr image) ':file)))
-;; (cond (data
-;; (with-temp-buffer
-;; (insert data)
-;; (call-shell-region
-;; (point-min) (point-max)
-;; "xclip -i -selection clipboard -t image/png")))
-;; (file
-;; (if (file-exists-p file)
-;; (start-process
-;; "xclip-proc" nil "xclip"
-;; "-i" "-selection" "clipboard" "-t" "image/png"
-;; "-quiet" (file-truename file))))
-;; (t (message "The image seems to be malformed."))))
-;; (message "Point is not at an image."))))
-
-;; (global-set-key (kbd "M-p") 'x11-yank-image-at-point-as-image)
-
 (defun xah-insert-column-az ()
   "Insert letters A to Z vertically, similar to `rectangle-number-lines'.
 The commpand will prompt for a start char, and number of chars to insert.
@@ -170,5 +136,11 @@ Version 2019-03-07"
 	   (visual-line-mode)
 	   (org-bullets-mode))
 	'(nil)))
+
+(defun o/line-first-non-whitespace-char ()
+  (interactive)
+  (if (bound-and-true-p visual-line-mode)
+      (move-beginning-of-line 1)
+    (back-to-indentation)))
 
 (provide 'functions)
