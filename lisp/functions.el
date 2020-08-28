@@ -5,7 +5,7 @@
 (defun o/ryo-stick ()
   (interactive)
   (if (ryo-modal-mode)
-	  '(nil)
+      '(nil)
     (ryo-modal-mode 1)))
 
 (defun o/quit ()
