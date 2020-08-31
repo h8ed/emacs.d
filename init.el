@@ -90,9 +90,10 @@
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
+(blink-cursor-mode 0)
 (fringe-mode 0)
 (xclip-mode 1)
-(global-display-line-numbers-mode -1)
+(global-display-line-numbers-mode 1)
 (electric-pair-mode)
 (electric-indent-mode -1)
 (add-hook
@@ -225,3 +226,9 @@ name as (name-without-ns . local)."
             (list set
                   (intern (format "%s-%s" var ns)) (cadr x))))
         (seq-partition args 2))))
+
+(defadvice find-file (after find-file-sudo activate)
+  "Find file as root if necessary."
+  (unless (and buffer-file-name
+               (file-writable-p buffer-file-name))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))

@@ -1,5 +1,4 @@
 (use-package xah-fly-keys)
-(use-package kakoune)
 (use-package expand-region)
 (require 'functions)
 
@@ -25,111 +24,135 @@
  "p" 'er/mark-inside-pairs
  "q" 'er/mark-inside-quotes
  "m" 'treemacs
- "." 'xah-new-empty-buffer
+ "n" 'xah-new-empty-buffer
  "C-<up>" 'o/varpitch
  "C-<down>" 'display-line-numbers-mode)
 
-(use-package ryo-modal
-  :commands ryo-modal-mode
-  :bind ("<escape>" . o/ryo-stick)
-  :config
-  (setq ryo-modal-cursor-color "#CA4A60")
-  (ryo-modal-key
-   "SPC" '(("c" "C-c")
-		   ("x" "C-x")
-		   ("h" o/select-to-bol)
-		   ("j" end-of-buffer)
-		   ("k" beginning-of-buffer)
-		   ("l" o/select-to-eol)
-		   ("e"
-			(("b" eval-buffer)
-			 ("e" eval-last-sexp)))
-		   ("F" mc/edit-lines)
-		   ("f"
-            (("f" find-file)
-             ("j" split-window-below)
-             ("k" split-window-right)
-			 ("h" describe-function)))
-		   ("g" goto-line)
-		   ("a" back-to-indentation)
-		   ("q"
-            (("q" delete-window)
-             ("w" kill-buffer)))
-           ("v" insert-register)
-		   ("s"
-            (("t" switch-to-buffer)
-             ("s" save-buffer)
-			 ("q" save-buffers-kill-emacs)))))
-  (ryo-modal-keys
-   ("a" "M-x")
-   ("b" xah-goto-matching-bracket)
-   ("c" "M-w")
-   ("d" o/delete)
-   ("e" er/expand-region)
-   ("F" o/insert-forward)
-   ("f" ryo-modal-mode)
-   ("g"
-	(("g" move-to-window-line-top-bottom)
-     ("h" o/line-first-non-whitespace-char)
-     ("j" end-of-buffer)
-     ("k" beginning-of-buffer)
-     ("l" move-end-of-line)
-     ("d"
-      (("{" o/wrap-fun-curly-bracket)
-       ("[" o/wrap-fun-sqr-bracket)
-       ("(" o/wrap-fun-paren)))))
-   ("h" backward-char)
-   ("H" beginning-of-defun)
-   ("i" undo)
-   ("J" forward-paragraph)
-   ("j" next-line)
-   ("K" backward-paragraph)
-   ("k" previous-line)
-   ("L" end-of-defun)
-   ("l" forward-char)
-   ("n" ryo-modal-repeat)
-   ("o" forward-same-syntax :first '(kakoune-set-mark-here))
-   ("O" forward-same-syntax :first '(kakoune-set-mark-if-inactive))
-   ("q" o/quit)
-   ("r" xah-forward-right-bracket)
-   ("s" o/newline)
-   ("S" o/newline-up)
-   ("T" rectangle-mark-mode)
-   ("t" set-mark-command)
-   ("u" kakoune-backward-same-syntax :first '(kakoune-set-mark-here))
-   ("U" kakoune-backward-same-syntax :first '(kakoune-set-mark-if-inactive))
-   ("v" "C-y")
-   ("w" xah-backward-left-bracket)
-   ("x" kakoune-x)
-   ("y" xah-toggle-letter-case)
-   ("z" comment-line)
-   ("," xah-beginning-of-line-or-block)
-   ("." xah-end-of-line-or-block)
-   ("(" paredit-wrap-sexp)
-   (")" paredit-split-sexp)
-   ("[" paredit-wrap-square)
-   ("{" paredit-wrap-curly)
-   ("<" paredit-wrap-angled)
-   ("/" avy-goto-char-timer)
-   ("'" copy-to-register)
-   ("\"" point-to-register)
-   ("-" xah-backward-punct)
-   ("=" xah-forward-punct)
-   ("m" jump-to-register))
-  (ryo-modal-keys
-   (:norepeat t)
-   ("0" "M-0")
-   ("1" "M-1")
-   ("2" "M-2")
-   ("3" "M-3")
-   ("4" "M-4")
-   ("5" "M-5")
-   ("6" "M-6")
-   ("7" "M-7")
-   ("8" "M-8")
-   ("9" "M-9")))
-(ryo-modal-mode 1)
+(defvar o/alter-cursor nil
+  "Alter the cursor style when `nav-mode' is active?")
+(defvar o/cursor-type-active 'box
+  "The cursor style to be used when nav-mode is active (if
+`nav/alter-cursor' is non-nil).")
+(defvar o/cursor-type-inactive cursor-type
+  "The cursor style to be used when nav-mode is not active (if
+`nav/alter-cursor' is non-nil).")
 
-;; Colemak
+(define-minor-mode oh-mode
+  "Orion's ersonal modal editing paradigm
+By default, use ESC to enter, and `f' to exit the mode
+\\{(oh-mode-map}
+"
+  nil " Oh"
+  '(((kbd "a") . execute-extended-command)
+    ((kbd "b") . o/goto-matching-bracket)
+    ((kbd "c") . kill-ring-save)
+    ((kbd "d") . o/delete)
+    ((kbd "e") . er/expand-region)
+    ((kbd "f") . o/exit-oh-mode)
+    ((kbd "F") . o/exit-oh-mode-front)
+    ((kbd "h") . backward-char)
+    ((kbd "H") . beginning-of-defun)
+    ((kbd "i") . undo)
+    ((kbd "j") . next-line)
+    ((kbd "J") . forward-paragraph)
+    ((kbd "k") . previous-line)
+    ((kbd "K") . backward-paragraph)
+    ((kbd "l") . forward-char)
+    ((kbd "L") . end-of-defun)
+    ((kbd "m") . jump-to-register)
+    ((kbd "n") . o/jump-to-char)
+    ((kbd "o") . o/forward-word)
+    ((kbd "O") . o/forward-word-active)
+    ((kbd "q") . o/quit)
+    ((kbd "r") . o/forward-right-bracket)
+    ((kbd "s") . o/newline)
+    ((kbd "S") . o/newline-up)
+    ((kbd "t") . set-mark-command)
+    ((kbd "T") . rectangle-mark-mode)
+    ((kbd "u") . o/backward-word)
+    ((kbd "U") . o/backward-word-active)
+    ((kbd "v") . yank)
+    ((kbd "w") . o/backward-left-bracket)
+    ((kbd "x") . o/select-line)
+    ((kbd "y") . o/toggle-letter-case)
+    ((kbd "z") . comment-line)
+    ((kbd ".") . o/end-of-line-or-block)
+    ((kbd ",") . o/beginning-of-line-or-block)
+    ((kbd "/") . avy-goto-char-timer)
+    ((kbd "(") . o/wrap-sexp)
+    ((kbd "\\") . o/split-sexp)
+    ((kbd "[") . o/wrap-square)
+    ((kbd "{") . o/wrap-curly)
+    ((kbd "-") . o/backward-punt)
+    ((kbd "=") . o/forward-punt)
+    ((kbd "<") . paredit-wrap-angled)
+    ((kbd "'") . copy-to-register)
+    ((kbd "\"") . point-to-register)
+    ((kbd "0") . [?\M-0])
+    ((kbd "1") . [?\M-1])
+    ((kbd "2") . [?\M-2])
+    ((kbd "3") . [?\M-3])
+    ((kbd "4") . [?\M-4])
+    ((kbd "5") . [?\M-5])
+    ((kbd "6") . [?\M-6])
+    ((kbd "7") . [?\M-7])
+    ((kbd "8") . [?\M-8])
+    ((kbd "9") . [?\M-9]))
+  :group 'oh-mode-group)
 
-(provide 'modal)
+(general-def oh-mode-map
+  :prefix "g"
+  "g" 'move-to-window-line-top-bottom
+  "h" 'o/line-first-non-whitespace-char
+  "j" 'end-of-buffer
+  "k" 'beginning-of-buffer
+  "l" 'move-end-of-line)
+
+(general-def oh-mode-map
+  :prefix "SPC"
+  "SPC" 'o/spc-spc
+  "h" 'o/select-to-bol
+  "j" 'end-of-buffer
+  "k" 'beginning-of-buffer
+  "l" 'o/select-to-eol
+  "F" 'mc/edit-lines
+  "g" 'goto-line
+  "a" 'back-to-indentation
+  "v" 'insert-register)
+
+(general-def oh-mode-map
+  :prefix "SPC e"
+  "b" 'eval-buffer
+  "e" 'eval-last-sexp)
+
+(general-def oh-mode-map
+  :prefix "SPC f"
+  "f" 'find-file
+  "j" 'split-window-below
+  "k" 'split-window-right
+  "h" 'describe-function)
+
+(general-def oh-mode-map
+  :prefix "SPC r"
+  "f" 'o/rename-file-and-buffer)
+
+(general-def oh-mode-map
+  :prefix "SPC q"
+  "q" 'delete-window
+  "w" 'kill-buffer)
+
+(general-def oh-mode-map
+  :prefix "SPC s"
+  "t" 'switch-to-buffer
+  "s" 'save-buffer
+  "q" 'save-buffers-kill-emacs)
+
+(general-def oh-mode-map
+  :prefix "SPC i"
+  "w" 'er/mark-word
+  "d" 'er/mark-defun
+  "s" 'er/mark-symbol
+  "'" 'er/mark-inside-quotes
+  "(" 'er/mark-inside-pairs)
+
+(global-set-key (kbd "<escape>") 'o/enter-oh-mode)

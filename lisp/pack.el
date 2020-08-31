@@ -118,6 +118,16 @@
   :defer t
   :ensure auctex
   :config
+  ;;Eliminates the necessity for the save command before compilation is completed
+  (setq TeX-save-query nil)
+
+  ;;Function that combines two commands 1. revert pdfoutput buffer 2. pdf-outline
+  (defun my-TeX-revert-document-buffer (file)
+    (TeX-revert-document-buffer file)
+    (pdf-outline))
+
+  ;; Add custom function to the TeX compilation hook
+  (add-hook 'TeX-after-compilation-finished-functions #'my-TeX-revert-document-buffer)
   (setq TeX-auto-save t))
 
 (use-package treemacs :bind ("C-c n" . treemacs))
@@ -200,6 +210,8 @@
    '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))))
 
 (use-package htmlize)
+
+(use-package bitlbee)
 
 (use-package emacs
   :delight
