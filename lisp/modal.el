@@ -1,5 +1,3 @@
-(use-package xah-fly-keys)
-(use-package expand-region)
 (require 'functions)
 
 (general-emacs-define-key global-map
@@ -156,3 +154,5 @@ By default, use ESC to enter, and `f' to exit the mode
   "(" 'er/mark-inside-pairs)
 
 (global-set-key (kbd "<escape>") 'o/enter-oh-mode)
+
+(provide 'modal)

@@ -72,19 +72,9 @@
   :hook (prog-mode . show-paren-mode)
   :config
   (setq-ns show-paren
-    delay 0
-    when-point-in-periphery t
-    when-point-inside-paren t))
-
-;; (use-package simple-modeline
-;; :config
-;; (simple-modeline-mode)
-;; (setq
-;; simple-modeline-show-misc-info t
-;; simple-modeline-show-input-method nil
-;; simple-modeline-show-eol nil
-;; simple-modeline-show-process nil
-;; simple-modeline-show-vc nil))
+           delay 0
+           when-point-in-periphery t
+           when-point-inside-paren t))
 
 (use-package aggressive-indent
   :hook ((prog-mode . aggressive-indent-mode)
