@@ -2,12 +2,6 @@
 ;;; My personal functions ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun o/ryo-stick ()
-  (interactive)
-  (if (ryo-modal-mode)
-      '(nil)
-    (ryo-modal-mode 1)))
-
 (defun o/enter-oh-mode ()
   (interactive)
   (if (bound-and-true-p oh-mode)
@@ -27,6 +21,16 @@
   (forward-char)
   (oh-mode -1))
 
+(defun o/cut-line-or-region ()
+  (interactive)
+  (if current-prefix-arg
+      (progn ; not using kill-region because we don't want to include previous kill
+        (kill-new (buffer-string))
+        (delete-region (point-min) (point-max)))
+    (progn (if (use-region-p)
+               (kill-region (region-beginning) (region-end) t)
+             (kill-region (line-beginning-position) (line-beginning-position 2))))))
+
 (defun o/quit ()
   (interactive)
   (execute-kbd-macro (kbd "C-g")))
@@ -42,53 +46,20 @@
   (newline)
   (forward-line -1))
 
-(defun o/insert-forward ()
-  (interactive)
-  (forward-char)
-  (ryo-modal-mode -1))
-
 (defun o/select-to-eol ()
   (interactive)
-  (kakoune-set-mark-if-inactive)
+  (o/set-mark-here)
   (move-end-of-line 1))
 
 (defun o/select-to-bol ()
   (interactive)
-  (kakoune-set-mark-if-inactive)
+  (o/set-mark-here)
   (move-beginning-of-line 1))
-
-(defun o/wrap-fun-paren ()
-  (interactive)
-  (ryo-modal-mode -1)
-  (er/mark-defun)
-  (execute-kbd-macro (kbd "(")))
-
-(defun o/wrap-fun-sqr-bracket ()
-  (interactive)
-  (ryo-modal-mode -1)
-  (progn (er/mark-defun)
-         (execute-kbd-macro (kbd "["))
-         (end-of-defun)
-         (beginning-of-defun)
-         (xah-backward-left-bracket)
-         (move-end-of-line 1)
-         (execute-kbd-macro (kbd "]"))))
-
-(defun o/wrap-fun-curly-bracket ()
-  (interactive)
-  (ryo-modal-mode -1)
-  (progn (er/mark-defun)
-         (execute-kbd-macro (kbd "{"))
-         (end-of-defun)
-         (beginning-of-defun)
-         (xah-backward-left-bracket)
-         (move-end-of-line 1)
-         (execute-kbd-macro (kbd "}"))))
 
 (defun o/delete ()
   (interactive)
   (if (use-region-p)
-	  (xah-cut-line-or-region)
+	  (o/cut-line-or-region)
 	(delete-char 1)))
 
 (defun o/voldown ()
@@ -126,12 +97,12 @@
 (defun o/backward-word ()
   (interactive)
   (o/set-mark-here)
-  (kakoune-backward-same-syntax 1))
+  (forward-same-syntax -1))
 
 (defun o/forward-word ()
   (interactive)
   (o/set-mark-here)
-  (forward-same-syntax))
+  (forward-same-syntax 1))
 
 (defun o/backward-word-active ()
   (interactive)
@@ -163,6 +134,30 @@
   (set-mark (point))
   (forward-line count))
 
+(defvar o/brackets nil "string of left/right brackets pairs.")
+(setq o/brackets "()[]{}<>＜＞（）［］｛｝⦅⦆〚〛⦃⦄“”‘’‹›«»「」〈〉《》【】〔〕⦗⦘『』〖〗〘〙｢｣⟦⟧⟨⟩⟪⟫⟮⟯⟬⟭⌈⌉⌊⌋⦇⦈⦉⦊❛❜❝❞❨❩❪❫❴❵❬❭❮❯❰❱❲❳〈〉⦑⦒⧼⧽﹙﹚﹛﹜﹝﹞⁽⁾₍₎⦋⦌⦍⦎⦏⦐⁅⁆⸢⸣⸤⸥⟅⟆⦓⦔⦕⦖⸦⸧⸨⸩｟｠⧘⧙⧚⧛⸜⸝⸌⸍⸂⸃⸄⸅⸉⸊᚛᚜༺༻༼༽⏜⏝⎴⎵⏞⏟⏠⏡﹁﹂﹃﹄︹︺︻︼︗︘︿﹀︽︾﹇﹈︷︸")
+
+(defvar o/left-brackets '("(" "{" "[" "<" "〔" "【" "〖" "〈" "《" "「" "『" "“" "‘" "‹" "«" )
+  "List of left bracket chars.")
+(progn
+  ;; make xah-left-brackets based on xah-brackets
+  (setq o/left-brackets '())
+  (dotimes ($x (- (length o/brackets) 1))
+    (when (= (% $x 2) 0)
+      (push (char-to-string (elt o/brackets $x))
+            o/left-brackets)))
+  (setq o/left-brackets (reverse o/left-brackets)))
+
+(defvar o/right-brackets '(")" "]" "}" ">" "〕" "】" "〗" "〉" "》" "」" "』" "”" "’" "›" "»")
+  "list of right bracket chars.")
+(progn
+  (setq o/right-brackets '())
+  (dotimes ($x (- (length o/brackets) 1))
+    (when (= (% $x 2) 1)
+      (push (char-to-string (elt o/brackets $x))
+            o/right-brackets)))
+  (setq o/right-brackets (reverse o/right-brackets)))
+
 (defun o/goto-matching-bracket ()
   (interactive)
   (if (nth 3 (syntax-ppss))
@@ -170,19 +165,19 @@
     (cond
      ((eq (char-after) ?\") (forward-sexp))
      ((eq (char-before) ?\") (backward-sexp ))
-     ((looking-at (regexp-opt xah-left-brackets))
+     ((looking-at (regexp-opt o/left-brackets))
       (forward-sexp))
-     ((looking-back (regexp-opt xah-right-brackets) (max (- (point) 1) 1))
+     ((looking-back (regexp-opt o/right-brackets) (max (- (point) 1) 1))
       (backward-sexp))
      (t (backward-up-list 1 'ESCAPE-STRINGS 'NO-SYNTAX-CROSSING)))))
 
 (defun o/backward-left-bracket ()
   (interactive)
-  (re-search-backward (regexp-opt xah-left-brackets) nil t))
+  (re-search-backward (regexp-opt o/left-brackets) nil t))
 
 (defun o/forward-right-bracket ()
   (interactive)
-  (re-search-forward (regexp-opt xah-right-brackets) nil t))
+  (re-search-forward (regexp-opt o/right-brackets) nil t))
 
 (defun o/toggle-letter-case ()
   (interactive)
@@ -278,17 +273,6 @@
   (interactive "p")
   (re-search-backward xah-punctuation-regex nil t n))
 
-(defun gk-pop-shell (arg)
-  (interactive "P")
-  (select-window
-   (display-buffer-in-side-window
-    (save-window-excursion
-      (let ((prefix-arg arg))
-        (call-interactively #'shell))
-      (current-buffer))
-    '((side . bottom)))))
-(global-set-key (kbd "M-c") 'gk-pop-shell)
-
 (defun o/insert-column-az ()
   (interactive)
   (let (
@@ -317,5 +301,16 @@
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))
 ;; (global-set-key (kbd "C-c r") 'rename-file-and-buffer)
+
+(defun o/pop-shell (arg)
+  (interactive "P")
+  (select-window
+   (display-buffer-in-side-window
+    (save-window-excursion
+      (let ((prefix-arg arg))
+        (call-interactively #'shell))
+      (current-buffer))
+    '((side . bottom)))))
+(global-set-key (kbd "M-c") 'o/pop-shell)
 
 (provide 'functions)

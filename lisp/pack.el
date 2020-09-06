@@ -35,6 +35,11 @@
 (use-package dash)
 (use-package dash-functional)
 
+(use-package highlight-indent-guides
+  :defer t
+  :config
+  (add-hook 'lua-mode-hook 'highlight-indent-guides-mode))
+
 (use-package mu4e
   :demand t
   :config
@@ -89,7 +94,7 @@
    '(zoom-ignored-major-modes '(dired-mode))))
 
 ;; ace window
-(use-package ace-window)
+(use-package ace-window :defer t)
 
 ;; completion
 (use-package company
@@ -102,6 +107,7 @@
 (use-package ctrlf)
 
 (use-package nix-mode
+  :defer t
   :mode "\\.nix\\'")
 
 (use-package tex
@@ -123,85 +129,46 @@
 (use-package treemacs :bind ("C-c n" . treemacs))
 
 (use-package lua-mode
-  :hook (lua-mode . indent-tabs-mode)
+  :defer t
   :config
   (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
   (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
   (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
-  (setq lua-indent-level 4
+  (setq lua-indent-level 2
         lua-indent-nested-block-content-align nil))
+
+(use-package fennel-mode
+  :defer t
+  :load-path "/home/orion/.emacs.d/lisp/fennel-mode.el"
+  :config (add-to-list 'auto-mode-alist '("\\.fnl\\'" . fennel-mode)))
 
 (use-package paredit)
 
-(use-package god-mode)
-
 (use-package emms
+  :defer t
   :config
   (emms-all)
   (emms-default-players))
 
-(use-package writeroom-mode)
+(use-package writeroom-mode :defer t)
 
-(use-package org-starless
-  :quelpa (org-starless :repo "TonCherAmi/org-starless" :fetcher github))
+(use-package htmlize :defer t)
 
-(use-package org
-  :hook ((org-mode . org-bullets-mode)
-         (org-mode . org-starless-mode)
-         (org-mode . variable-pitch-mode)
-         (org-mode . visual-line-mode))
+(use-package bitlbee :defer t)
+
+(use-package hl-todo
+  :defer t
+  :hook (prog-mode . hl-todo-mode)
   :config
-  (setq org-hide-emphasis-markers t)
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-  (let* ((variable-tuple
-          (cond ((x-list-fonts "TeX Gyre Pagella")  '(:font "TeX Gyre Pagella"))
-                ((x-list-fonts "IBM Plex Serif")  '(:font "IBM Plex Serif"))
-                ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
-                ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
-                ((x-list-fonts "Verdana")         '(:font "Verdana"))
-                ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
-                (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
-         (base-font-color     (face-foreground 'default nil 'default))
-         (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
-
-    (custom-theme-set-faces
-     'user
-     `(org-level-8 ((t (,@headline ,@variable-tuple))))
-     `(org-level-7 ((t (,@headline ,@variable-tuple))))
-     `(org-level-6 ((t (,@headline ,@variable-tuple))))
-     `(org-level-5 ((t (,@headline ,@variable-tuple))))
-     `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
-     `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
-     `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
-     `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
-     `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
-
-  (custom-theme-set-faces
-   'user
-   '(variable-pitch ((t (:family "TeX Gyre Pagella" :height 120))))
-   '(fixed-pitch ((t ( :family "IBM Plex Mono" :height 100)))))
-
-  (custom-theme-set-faces
-   'user
-   '(org-block ((t (:inherit fixed-pitch))))
-   '(org-default ((t (:inherit variable-pitch))))
-   '(org-code ((t (:inherit (shadow fixed-pitch)))))
-   '(org-document-info ((t (:foreground "dark orange"))))
-   '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-   '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
-   '(org-link ((t (:foreground "royal blue" :underline t))))
-   '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-   '(org-property-value ((t (:inherit fixed-pitch))) t)
-   '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-   '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
-   '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
-   '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))))
-
-(use-package htmlize)
-
-(use-package bitlbee)
+  (setq hl-todo-highlight-punctuation ":"
+        hl-todo-keyword-faces
+        `(("TODO"       warning bold)
+          ("FIXME"      error bold)
+          ("HACK"       font-lock-constant-face bold)
+          ("##"         font-lock-constant-face bold)
+          ("REVIEW"     font-lock-keyword-face bold)
+          ("NOTE"       success bold)
+          ("DEPRECATED" font-lock-doc-face bold))))
 
 (use-package emacs
   :delight
@@ -218,8 +185,5 @@
   (buffer-face-mode "/bf")
   (org-mode "Org")
   (visual-line-mode "/↵"))
-
-;; (use-package vterm
-;; :load-path "/home/orion/.emacs.d/lisp/emacs-libvterm/")
 
 (provide 'pack)

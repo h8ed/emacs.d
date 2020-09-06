@@ -41,27 +41,20 @@
 ;;; -- the basics -- ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; initialize packages
+;; use-package bootstrap
 (package-initialize)
 
-;; -- load packages, bootstrap use-package -- ;;
 (require 'package) ;; Emacs builtin
 
-;; set package.el repositories
 (setq package-archives '(("org" . "https://orgmode.org/elpa/")
                          ("gnu" . "https://elpa.gnu.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")))
 
-;; update packages list if we are on a new install
 (unless package-archive-contents
   (package-refresh-contents))
 
-;; a list of pkgs to programmatically install
-;; ensure installed via package.el
 (setq my-package-list '(use-package))
 
-;; programmatically install/ensure installed
-;; pkgs in your personal list
 (dolist (package my-package-list)
   (unless (package-installed-p package)
     (package-install package)))
@@ -81,10 +74,10 @@
 (yas-global-mode 1)
 
 ;; require packages from load path
-(require 'pack) ; misc packages for stuff i do with emacs .. duh
-(require 'pdf-images) ; support for PDF and image viewing inside emacs
+(require 'pack) ; misc packages
+(require 'pdf-images)
 (require 'functions) ; personal functions
-(require 'hydras) ; pseudo modal modes -- do i still need this?
+(require 'org-conf)
 
 ;; basic changes
 (menu-bar-mode -1)
@@ -116,7 +109,7 @@
            ;; right
            (format-mode-line "%b ⟶ (%l,%c) "))))
 
- display-line-numbers-type 'relative
+ display-line-numbers-type 'nil
  ;; display-line-numbers-current-absolute t
  ;; display-line-numbers-width 4
  ;; display-line-numbers-widen t
@@ -127,6 +120,7 @@
  cursor-type 'bar
  show-parens-mode 1
  frame-resize-pixelwise t
+ highlight-indent-guides-method 'bitmap
 
  mouse-wheel-scroll-amount '(1)
  mouse-wheel-progressive-speed 'nil
@@ -156,7 +150,7 @@
  load-prefer-newer t
 
  custom-file (concat user-emacs-directory "/custom.el")
- explicit-shell-file-name "/home/orion/.nix-profile/bin/fish")
+ explicit-shell-file-name "/run/current-system/sw/bin/fish")
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
