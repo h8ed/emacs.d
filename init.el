@@ -59,6 +59,10 @@
   (unless (package-installed-p package)
     (package-install package)))
 
+(set-frame-font "IBM Plex Mono 10" nil t)
+;; (set-cursor-color "#3387a1")
+(set-cursor-color "#e36387")
+
 ;; source local files
 (add-to-list
  'load-path (expand-file-name "~/.emacs.d/lisp/"))
@@ -66,18 +70,18 @@
 (add-to-list
  'custom-theme-load-path (expand-file-name "~/.emacs.d/themes/"))
 
-(add-to-list
- 'load-path "~/.emacs.d/plugins/yasnippet")
-(require 'yasnippet)
-(setq yas-snippet-dirs
-      '("~/.emacs.d/snippets"))
-(yas-global-mode 1)
+;(add-to-list
+; 'load-path "~/.emacs.d/plugins/yasnippet")
+;(require 'yasnippet)
+;(setq yas-snippet-dirs
+;      '("~/.emacs.d/snippets"))
+;(yas-global-mode 1)
 
 ;; require packages from load path
 (require 'pack) ; misc packages
-(require 'pdf-images)
+;(require 'pdf-images)
 (require 'functions) ; personal functions
-(require 'org-conf)
+;(require 'org-conf)
 
 ;; basic changes
 (menu-bar-mode -1)
@@ -85,7 +89,7 @@
 (tool-bar-mode -1)
 (blink-cursor-mode 0)
 (fringe-mode 0)
-(xclip-mode 1)
+;(xclip-mode 1)
 (global-display-line-numbers-mode 1)
 (electric-pair-mode)
 (electric-indent-mode -1)
@@ -118,7 +122,6 @@
 
  cursor-in-non-selected-windows nil
  cursor-type 'bar
- show-parens-mode 1
  frame-resize-pixelwise t
  highlight-indent-guides-method 'bitmap
 
@@ -150,12 +153,19 @@
  load-prefer-newer t
 
  custom-file (concat user-emacs-directory "/custom.el")
- explicit-shell-file-name "/run/current-system/sw/bin/fish")
+ ;; explicit-shell-file-name "/run/current-system/sw/bin/fish"
+ )
+
+(show-paren-mode 1)
+
+(zoom-mode 1)
+(custom-set-variables
+ '(zoom-size '(0.618 . 0.618)))
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; UI changes
-(load-theme 'xresources t)
+(load-theme 'black t)
 (fringe-mode '(0 . 0))
 
 ;; Feeling some EXWM?
