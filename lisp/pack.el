@@ -1,14 +1,19 @@
-;; icons
+;;; icons
+;; (setq use-package-always-ensure t)
 (use-package quelpa-use-package)
 
+(use-package expand-region)
+
 (use-package all-the-icons)
+
+(use-package dmenu)
 
 ;; dashboard
 (use-package dashboard
   :config
   (dashboard-setup-startup-hook)
   (setq
-   dashboard-startup-banner "/home/orion/pictures/darlinglogo.png"
+   dashboard-startup-banner "/home/ojt/pictures/02.png"
    dashboard-banner-logo-title "Welcome, darling!"
    dashboard-center-content t
    dashboard-items '((recents . 5)
@@ -35,63 +40,34 @@
 (use-package dash)
 (use-package dash-functional)
 
+(use-package dired+
+  :load-path "~/.emacs.d/lisp/dired+.el")
+
 (use-package highlight-indent-guides
   :defer t
   :config
   (add-hook 'lua-mode-hook 'highlight-indent-guides-mode))
 
-(use-package mu4e
-  :demand t
-  :config
-  ;; use mu4e for e-mail in emacs
-  (setq mail-user-agent 'mu4e-user-agent)
-
-  ;; these must start with a "/", and must exist
-  ;; (i.e.. /home/user/Maildir/sent must exist)
-  ;; you use e.g. 'mu mkdir' to make the Maildirs if they don't
-  ;; already exist
-
-  ;; below are the defaults; if they do not exist yet, mu4e offers to
-  ;; create them. they can also functions; see their docstrings.
-  ;; (setq mu4e-sent-folder   "/sent")
-  ;; (setq mu4e-drafts-folder "/drafts")
-  ;; (setq mu4e-trash-folder  "/trash")
-
-  ;; smtp mail setting; these are the same that `gnus' uses.
-  (setq
-   message-send-mail-function   'smtpmail-send-it
-   smtpmail-default-smtp-server "smtp.example.com"
-   smtpmail-smtp-server         "smtp.example.com"
-   smtpmail-local-domain        "example.com")
-  (setq mu4e-contexts
-        `( ,(make-mu4e-context
-             :name "Gmail"
-             :match-func (lambda (msg)
-                           (when msg
-                             (string-prefix-p "/Gmail" (mu4e-message-field msg :maildir))))
-             :vars '((mu4e-trash-folder . "/Gmail/[Gmail].Trash")
-                     (mu4e-refile-folder . "/Gmail/[Gmail].Archive"))))))
-
-(use-package show-paren
-  :defer t
-  :hook (prog-mode . show-paren-mode)
-  :config
-  (setq-ns show-paren
-           delay 0
-           when-point-in-periphery t
-           when-point-inside-paren t))
+;(use-package show-paren
+;  :defer t
+;  :hook (prog-mode . show-paren-mode)
+;  :config
+;  (setq-ns show-paren
+;           delay 0
+;           when-point-in-periphery t
+;           when-point-inside-paren t))
 
 (use-package aggressive-indent
   :hook ((prog-mode . aggressive-indent-mode)
          (emacs-lisp-mode . aggressive-indent-mode)))
 
-(use-package zoom
-  :load-path "/home/orion/.emacs.d/lisp/zoom"
-  :config
-  (zoom-mode 1)
-  (custom-set-variables
-   '(zoom-size '(0.618 . 0.618))
-   '(zoom-ignored-major-modes '(dired-mode))))
+;(use-package zoom
+;  :load-path "/home/orion/.emacs.d/lisp/zoom"
+;  :config
+;  (zoom-mode 1)
+;  (custom-set-variables
+;   '(zoom-size '(0.618 . 0.618))
+;   '(zoom-ignored-major-modes '(dired-mode))))
 
 ;; ace window
 (use-package ace-window :defer t)
@@ -106,27 +82,31 @@
 
 (use-package ctrlf)
 
-(use-package nix-mode
-  :defer t
-  :mode "\\.nix\\'")
+;(use-package nix-mode
+;  :defer t
+;  :mode "\\.nix\\'")
 
-(use-package tex
-  :defer t
-  :ensure auctex
-  :config
-  ;;Eliminates the necessity for the save command before compilation is completed
-  (setq TeX-save-query nil)
+;(use-package tex
+;  :defer t
+;  :ensure auctex
+;  :config
+;  ;;Eliminates the necessity for the save command before compilation is completed
+;  (setq TeX-save-query nil)
 
   ;;Function that combines two commands 1. revert pdfoutput buffer 2. pdf-outline
-  (defun my-TeX-revert-document-buffer (file)
-    (TeX-revert-document-buffer file)
-    (pdf-outline))
+;  (defun my-TeX-revert-document-buffer (file)
+;    (TeX-revert-document-buffer file)
+;    (pdf-outline))
 
   ;; Add custom function to the TeX compilation hook
-  (add-hook 'TeX-after-compilation-finished-functions #'my-TeX-revert-document-buffer)
-  (setq TeX-auto-save t))
+;  (add-hook 'TeX-after-compilation-finished-functions #'my-TeX-revert-document-buffer)
+;  (setq TeX-auto-save t))
 
 (use-package treemacs :bind ("C-c n" . treemacs))
+
+;; (use-package haskell-mode
+;; :defer t
+;; :config (add-to-list 'auto-mode-alist '("\\.hs\\'" . haskell-mode)))
 
 (use-package lua-mode
   :defer t
@@ -152,6 +132,8 @@
 
 (use-package writeroom-mode :defer t)
 
+(use-package zoom)
+
 (use-package htmlize :defer t)
 
 (use-package bitlbee :defer t)
@@ -169,6 +151,8 @@
           ("REVIEW"     font-lock-keyword-face bold)
           ("NOTE"       success bold)
           ("DEPRECATED" font-lock-doc-face bold))))
+
+
 
 (use-package emacs
   :delight
