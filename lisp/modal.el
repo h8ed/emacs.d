@@ -1,14 +1,16 @@
 (require 'functions)
 
+(use-package general)
+
 (general-emacs-define-key global-map
-  "C-;" 'ctrlf-backward-literal
-  "C-'" 'ctrlf-forward-literal
-  "<M-up>" 'drag-stuff-up
-  "<M-down>" 'drag-stuff-down)
+                          "C-;" 'ctrlf-backward-literal
+                          "C-'" 'ctrlf-forward-literal
+                          "<M-up>" 'drag-stuff-up
+                          "<M-down>" 'drag-stuff-down)
 
 (general-translate-key nil 'dired-mode-map
-  "j" "n"
-  "k" "p")
+                       "j" "n"
+                       "k" "p")
 
 (general-define-key
  :prefix "C-c"
