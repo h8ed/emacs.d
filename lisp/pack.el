@@ -1,5 +1,5 @@
 ;;; icons
-;; (setq use-package-always-ensure t)
+(setq use-package-always-ensure t)
 (use-package quelpa-use-package)
 
 (use-package expand-region)
@@ -8,69 +8,22 @@
 
 (use-package dmenu)
 
-;; dashboard
-(use-package dashboard
-  :config
-  (dashboard-setup-startup-hook)
-  (setq
-   dashboard-startup-banner "/home/ojt/pictures/02.png"
-   dashboard-banner-logo-title "Welcome, darling!"
-   dashboard-center-content t
-   dashboard-items '((recents . 5)
-                     (bookmarks . 5))
-   dashboard-set-heading-icons t
-   dashboard-set-file-icons t
-   dashboard-set-navigator t
-   dashboard-navigator-buttons
-   `(;; line1
-     ((,(all-the-icons-octicon "mark-github" :height 1.1 :v-adjust 0.0)
-       "Github"
-       "My Github"
-       (lambda (&rest _) (browse-url "https://github.com/h8ed"))))
-     ;; line 2
-     ((,(all-the-icons-faicon "youtube" :height 1.1 :v-adjust 0.0)
-       "Youtube"
-       ""
-       (lambda (&rest _) (browse-url "https://youtube.com")))
-      (,(all-the-icons-faicon "apple" :height 1.1 :v-adjust 0.0)
-       "Discord"
-       ""
-       (lambda (&rest _) (browse-url "https://discord.com")))))))
-
 (use-package dash)
-(use-package dash-functional)
 
 (use-package dired+
   :load-path "~/.emacs.d/lisp/dired+.el")
-
-(use-package highlight-indent-guides
-  :defer t
-  :config
-  (add-hook 'lua-mode-hook 'highlight-indent-guides-mode))
-
-;(use-package show-paren
-;  :defer t
-;  :hook (prog-mode . show-paren-mode)
-;  :config
-;  (setq-ns show-paren
-;           delay 0
-;           when-point-in-periphery t
-;           when-point-inside-paren t))
 
 (use-package aggressive-indent
   :hook ((prog-mode . aggressive-indent-mode)
          (emacs-lisp-mode . aggressive-indent-mode)))
 
-;(use-package zoom
-;  :load-path "/home/orion/.emacs.d/lisp/zoom"
-;  :config
-;  (zoom-mode 1)
-;  (custom-set-variables
-;   '(zoom-size '(0.618 . 0.618))
-;   '(zoom-ignored-major-modes '(dired-mode))))
-
-;; ace window
-(use-package ace-window :defer t)
+(use-package zoom
+  ;;:load-path "/home/orion/.emacs.d/lisp/zoom"
+  :config
+  (zoom-mode 1)
+  (custom-set-variables
+   '(zoom-size '(0.618 . 0.618))
+   '(zoom-ignored-major-modes '(dired-mode))))
 
 ;; completion
 (use-package company
@@ -80,29 +33,27 @@
 (use-package ivy
   :config (ivy-mode 1))
 
-(use-package ctrlf)
+(use-package nix-mode
+  :mode "\\.nix\\'")
 
-;(use-package nix-mode
-;  :defer t
-;  :mode "\\.nix\\'")
+(use-package newlisp-mode
+  :mode "\\.lsp\\'")
 
-;(use-package tex
-;  :defer t
-;  :ensure auctex
-;  :config
-;  ;;Eliminates the necessity for the save command before compilation is completed
-;  (setq TeX-save-query nil)
+(use-package tex
+  :defer t
+  :ensure auctex
+  :config
+  ;;Eliminates the necessity for the save command before compilation is completed
+  (setq TeX-save-query nil)
 
   ;;Function that combines two commands 1. revert pdfoutput buffer 2. pdf-outline
-;  (defun my-TeX-revert-document-buffer (file)
-;    (TeX-revert-document-buffer file)
-;    (pdf-outline))
+  (defun my-TeX-revert-document-buffer (file)
+    (TeX-revert-document-buffer file)
+    (pdf-outline))
 
   ;; Add custom function to the TeX compilation hook
-;  (add-hook 'TeX-after-compilation-finished-functions #'my-TeX-revert-document-buffer)
-;  (setq TeX-auto-save t))
-
-(use-package treemacs :bind ("C-c n" . treemacs))
+  (add-hook 'TeX-after-compilation-finished-functions #'my-TeX-revert-document-buffer)
+  (setq TeX-auto-save t))
 
 ;; (use-package haskell-mode
 ;; :defer t
@@ -119,7 +70,6 @@
 
 (use-package fennel-mode
   :defer t
-  :load-path "/home/orion/.emacs.d/lisp/fennel-mode.el"
   :config (add-to-list 'auto-mode-alist '("\\.fnl\\'" . fennel-mode)))
 
 (use-package paredit)
@@ -130,9 +80,23 @@
   (emms-all)
   (emms-default-players))
 
-(use-package writeroom-mode :defer t)
+(use-package writeroom-mode
+  :defer t
+  :load-path "~/.emacs.d/lisp/writeroom-mode.el")
 
-(use-package zoom)
+(use-package olivetti)
+
+;; (use-package spaceship-mode
+;;   :load-path "~/.emacs.d/spaceship-mode/spaceship-mode.el"
+;;   :hook ((prog-mode . spaceship-mode)
+;;          (emacs-lisp-mode . spaceship-mode)
+;;          (startup-mode . spaceship-mode)
+;;          (text-mode . spaceship-mode)))
+
+;; (use-package tabble-mode
+;;   :load-path "~/.emacs.d/spaceship-mode/tabble-mode.el"
+;;   :config
+;;   (add-hook 'spaceship-mode-hook (lambda () (tabble-mode 1))))
 
 (use-package htmlize :defer t)
 
@@ -152,7 +116,8 @@
           ("NOTE"       success bold)
           ("DEPRECATED" font-lock-doc-face bold))))
 
-
+(use-package org-starless
+  :quelpa (org-starless :repo "TonCherAmi/org-starless" :fetcher github))
 
 (use-package emacs
   :delight
