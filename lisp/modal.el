@@ -23,7 +23,7 @@
  "d" 'er/mark-defun
  "p" 'er/mark-inside-pairs
  "q" 'er/mark-inside-quotes
- "m" 'treemacs
+ "m" 'o/toggle-modeline
  "n" 'xah-new-empty-buffer
  "C-<up>" 'o/varpitch
  "C-<down>" 'display-line-numbers-mode)
