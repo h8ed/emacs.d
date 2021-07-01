@@ -228,6 +228,31 @@
         (re-search-forward "\n[\t\n ]*\n+" nil "move" ))
     (end-of-line)))
 
+(defun o/c-tabs ()
+  (setq indent-tabs-mode t
+        tab-width 4
+        c-basic-offset 4))
+
+(defun o/text-mode-font ()
+  (if (or (equal major-mode 'text-mode)
+          (bound-and-true-p olivetti-mode))
+      (set-frame-font "Linux Libertine 12" nil t)
+    (set-frame-font "IBM Plex Mono 10" nil t)))
+
+(defun o/toggle-modeline ()
+  (interactive)
+  (if (equal mode-line-format nil)
+      (progn
+        (setq mode-line-format
+              '((:eval (simple-mode-line-render
+                        ;; left
+                        ;; (format-mode-line "｢%*｣")
+                        (format-mode-line " ")
+                        ;; right
+                        (format-mode-line "%b ⟶ (%l,%c) ")))))
+        (redraw-display))
+    (setq mode-line-format nil)))
+
 (defun o/wrap-sexp (&optional argument open close)
   (interactive "P")
   (paredit-lose-if-not-in-sexp 'paredit-wrap-sexp)
@@ -300,17 +325,24 @@
           (rename-buffer new-name)
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))
-;; (global-set-key (kbd "C-c r") 'rename-file-and-buffer)
+(global-set-key (kbd "C-c r") 'o/rename-file-and-buffer)
 
-(defun o/pop-shell (arg)
-  (interactive "P")
-  (select-window
-   (display-buffer-in-side-window
-    (save-window-excursion
-      (let ((prefix-arg arg))
-        (call-interactively #'shell))
-      (current-buffer))
-    '((side . bottom)))))
+(use-package popwin)
+
+(defun o/popwin-term (name)
+  (popwin:display-buffer-1
+   (or (get-buffer name)
+       (save-window-excursion
+         (eshell)))
+   :default-config-keywords '(:height 15 :position :bottom :noselect nil :stick t))
+  (rename-buffer name))
+
+(cl-defun o/pop-shell (&optional (name "*shell*"))
+  (interactive)
+  (cond
+   ((get-buffer-window name) (kill-buffer name))
+   ((get-buffer name) (progn (kill-buffer name) (o/pop-shell)))
+   (t (o/popwin-term name))))
 (global-set-key (kbd "M-c") 'o/pop-shell)
 
 (defun xah-new-empty-buffer ()
