@@ -1,10 +1,3 @@
-;; ________  .__    _________                _____ 
-;; \_____  \ |  |__ \_   ___ \  ____   _____/ ____\
-;;  /   |   \|  |  \/    \  \/ /  _ \ /    \   __\ 
-;; /    |    \   Y  \     \___(  <_> )   |  \  |   
-;; \_______  /___|  /\______  /\____/|___|  /__|   
-;;         \/     \/        \/            \/       
-
 ;; Everything in this file is completely public domain.
 ;; Anyone may use it for whatever they'd like.
 
@@ -16,11 +9,13 @@
 ;; to *my* liking, so there may be some things
 ;; others would like to tweak to their own preference.
 
-;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; -- startup ops -- ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 
+;; #505075 , #76848F , #BFBFBF
+;;
 
-;; Temporarily reduce garbage collection during startup. Inspect `gcs-done'.
+;;; -- startup ops -- ;;;
+
+;; temporarily reduce garbage collection during startup. Inspect `gcs-done'.
 (defun ambrevar/reset-gc-cons-threshold ()
   (setq gc-cons-threshold
         (car(get 'gc-cons-threshold 'standard-value))))
@@ -37,14 +32,12 @@
   (cl-delete-duplicates file-name-handler-alist :test 'equal))
 (add-hook 'after-init-hook #'ambrevar/reset-file-name-handler-alist)
 
-;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; -- the basics -- ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; use-package bootstrap
 (package-initialize)
 
-(require 'package) ;; Emacs builtin
+(require 'package) ;; emacs builtin
 
 (setq package-archives '(("org" . "https://orgmode.org/elpa/")
                          ("gnu" . "https://elpa.gnu.org/packages/")
@@ -59,8 +52,9 @@
   (unless (package-installed-p package)
     (package-install package)))
 
-(set-frame-font "IBM Plex Mono 10" nil t)
-;; (set-cursor-color "#3387a1")
+(set-frame-font "IBM Plex Mono 9" nil t)
+;; (set-frame-font "Linux Libertine 12" nil t)
+;; ;; (set-cursor-color "#3387a1")
 (set-cursor-color "#e36387")
 
 ;; source local files
@@ -70,18 +64,16 @@
 (add-to-list
  'custom-theme-load-path (expand-file-name "~/.emacs.d/themes/"))
 
-;(add-to-list
-; 'load-path "~/.emacs.d/plugins/yasnippet")
-;(require 'yasnippet)
-;(setq yas-snippet-dirs
-;      '("~/.emacs.d/snippets"))
-;(yas-global-mode 1)
+(add-to-list
+ 'load-path (expand-file-name "~/.emacs.d/spaceship-mode/"))
+
+;; (add-to-list 'default-frame-alist '(minibuffer . nil))
 
 ;; require packages from load path
 (require 'pack) ; misc packages
 ;(require 'pdf-images)
 (require 'functions) ; personal functions
-;(require 'org-conf)
+(require 'org-conf)
 
 ;; basic changes
 (menu-bar-mode -1)
@@ -89,13 +81,15 @@
 (tool-bar-mode -1)
 (blink-cursor-mode 0)
 (fringe-mode 0)
-;(xclip-mode 1)
-(global-display-line-numbers-mode 1)
+;;(xclip-mode 1)
 (electric-pair-mode)
 (electric-indent-mode -1)
+;; (add-hook
+;;  'after-change-major-mode-hook 'o/text-mode-font)
 (add-hook
  'after-change-major-mode-hook (lambda() (electric-indent-mode -1)))
 (global-hl-line-mode 1)
+(add-hook 'c-mode-hook 'o/c-tabs)
 (emms-all)
 (emms-default-players)
 
@@ -105,13 +99,14 @@
 
 ;; set variables
 (setq-default
- mode-line-format
- '((:eval (simple-mode-line-render
-           ;; left
-           ;; (format-mode-line "｢%*｣")
-           (format-mode-line " ")
-           ;; right
-           (format-mode-line "%b ⟶ (%l,%c) "))))
+ initial-buffer-choice '*scratch*
+
+ mode-line-format nil
+ ;; mode-line-format '((:eval (simple-mode-line-render
+ ;; left
+ ;; (format-mode-line "｢%*｣")
+ ;; right
+ ;; (format-mode-line "%b ⟶ (%l,%c) "))))
 
  display-line-numbers-type 'nil
  ;; display-line-numbers-current-absolute t
@@ -143,6 +138,8 @@
  auto-save-list-file-prefix "~/.cache/emacs-autosave/"
  create-lockfiles nil
 
+ c-default-style "bsd"
+
  require-final-newline t
 
  enable-local-eval t
@@ -153,7 +150,37 @@
  load-prefer-newer t
 
  custom-file (concat user-emacs-directory "/custom.el")
- ;; explicit-shell-file-name "/run/current-system/sw/bin/fish"
+
+ ;; default-minibuffer-frame (make-frame
+ ;; '((name . "minibuffer")
+ ;; (width . 80)
+ ;; (height . 5)
+ ;; (minibuffer . only)
+ ;; (top . 0)
+ ;; (left . 0)))
+ ;; new-frame (make-frame
+ ;; '((name . "editor")
+ ;; (width . 80)
+ ;; (height . 30)
+ ;; (minibuffer . nil)
+ ;; (top . 50)
+ ;; (left . 0)))
+ ;; new-frame (make-frame
+ ;; '((name . "eterm")
+ ;; (width . 80)
+ ;; (height . 30)
+ ;; (minibuffer . nil)
+ ;; (top . 50)
+ ;; (left . 0)))
+
+ eshell-prompt-regexp "^[^#$\n]*[#$] "
+ eshell-prompt-function
+ (lambda nil
+   (concat
+	(if (string= (eshell/pwd) (getenv "HOME"))
+	    "~" (eshell/basename (eshell/pwd)))
+	" "
+	(if (= (user-uid) 0) "# " "$ ")))
  )
 
 (show-paren-mode 1)
@@ -165,7 +192,7 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; UI changes
-(load-theme 'black t)
+(load-theme 'muted t)
 (fringe-mode '(0 . 0))
 
 ;; Feeling some EXWM?
@@ -231,8 +258,10 @@ name as (name-without-ns . local)."
                   (intern (format "%s-%s" var ns)) (cadr x))))
         (seq-partition args 2))))
 
-(defadvice find-file (after find-file-sudo activate)
-  "Find file as root if necessary."
-  (unless (and buffer-file-name
-               (file-writable-p buffer-file-name))
-    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+;;; -- spaceship mode - proportional fonts with proper alignment -- ;;;
+;; (require 'spaceship-mode)
+;; (require 'tabble-mode)
+
+;; (spaceship-mode 1)
+;; (tabble-mode 1)
+
